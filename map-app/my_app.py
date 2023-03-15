@@ -1,8 +1,9 @@
+import os
 import plotly.graph_objects as go
 import dash
 from dash import html
 from dash import dcc
-import os
+
 app = dash.Dash()
 
 mapbox_access_token = os.environ['mapbox_access_token']
