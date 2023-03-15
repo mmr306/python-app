@@ -15,7 +15,7 @@ jobs:
           command: pip install -r requirements.txt
       - run:
           name: lint
-          command: pylint .
+          command: pylint map-app/
 
   say-hello:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
