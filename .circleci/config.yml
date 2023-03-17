@@ -10,13 +10,21 @@ jobs:
       - image: cimg/python:3.10.1
     steps:
       - checkout
+      - restore_cache: # **restores saved dependency cache if the Branch key template or requirements.txt files have not changed since the previous run**
+          key: &deps1-cache deps1-{{ .Branch }}-{{ checksum "requirements.txt" }} 
       - run:
           name: install dependencies
-          command: pip install -r requirements.txt
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
       - run:
           name: lint
-          command: pylint map-app/
-
+          command: pylint map-app/     
+      - save_cache: # ** special step to save dependency cache **
+          key: *deps1-cache
+          paths:
+            - "venv"
   say-hello:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
@@ -29,7 +37,9 @@ jobs:
       - run:
           name: "Say hello"
           command: "echo Hello, World!"
+     
 
+          
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
