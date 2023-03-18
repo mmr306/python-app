@@ -65,7 +65,10 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "ec:d4:6f:89:b6:5d:2b:92:af:74:44:21:19:1a:9a:cd"
-
+      - run:
+          name: Fix ssh Could not resolve hostname
+          command: |
+            ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts # Add live server IP to known hosts.
       - run:
            name: Test deploy 
            command: |
