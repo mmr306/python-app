@@ -34,12 +34,6 @@ jobs:
       - run:
           name: install dependencies
           command: pip install pytest
-      # - run:
-      #     name: Run test
-          # command: |
-          #   echo $(circleci tests glob "test-app/*.py")
-          #   circleci tests glob "test-app/*.py" | circleci tests split > /tmp/tests-to-run
-          #   bundle exec rspec $(cat /tmp/tests-to-run)
       - run:
           name: Run tests
           command: |
@@ -64,7 +58,14 @@ jobs:
       - run:
           name: "Say hello"
           command: "echo Hello, World!"
-     
+  deploy:
+    machine: true
+    working_directory: ~/repo-name
+    steps:
+      - checkout
+      - run:
+           name: Test deploy 
+           command: ssh $SSH_USER@$SSH_HOST 'cd /home/$SSH_USER/test_circleci && echo "Hello" >> test.txt'  
           
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -72,7 +73,8 @@ workflows:
   python-workflow:
     jobs:
       - lint
-      - test
+      # - test
+      - deploy
   deploy-workflow:
     when:
         or:
