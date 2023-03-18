@@ -59,24 +59,25 @@ jobs:
           name: "Say hello"
           command: "echo Hello, World!"
   deploy:
-    docker:
-      - image: arvindr226/alpine-ssh
+    machine: true
+    # docker:
+    #   - image: arvindr226/alpine-ssh
     steps:
       - checkout
       - add_ssh_keys:
           fingerprints:
             - "ec:d4:6f:89:b6:5d:2b:92:af:74:44:21:19:1a:9a:cd"
-      - run:
-          name: Fix ssh Could not resolve hostname
-          command: |
-            ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts # Add live server IP to known hosts.
+      # - run:
+      #     name: Fix ssh Could not resolve hostname
+      #     command: |
+      #       ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts # Add live server IP to known hosts.
       - run:
            name: Test deploy 
            command: |
                ls ~/.ssh
                cat ~/.ssh/config
-               ssh -oStrictHostKeyChecking=no -v  $SSH_USER@$SSH_HOST 'ls'
-               #ssh $SSH_USER@$SSH_HOST 'cd /home/$SSH_USER/test_circleci && ./deploy.sh dev'  
+               #ssh -oStrictHostKeyChecking=no -v  $SSH_USER@$SSH_HOST 'ls'
+               ssh $SSH_USER@$SSH_HOST 'cd /home/$SSH_USER/test_circleci && ./deploy.sh dev'  
           
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
