@@ -33,7 +33,7 @@ jobs:
       - checkout
       - run:
           name: install dependencies
-          command: pip install pylint
+          command: pip install pytest
       # - run:
       #     name: Run test
           # command: |
