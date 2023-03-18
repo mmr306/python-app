@@ -16,15 +16,15 @@ jobs:
           name: install dependencies
           command: |
             python3 -m venv venv
-            . venv/bin/activate
+            source venv/bin/activate
             pip install -r requirements.txt
-      - run:
-          name: lint
-          command: pylint map-app/     
       - save_cache: # ** special step to save dependency cache **
           key: *deps1-cache
           paths:
             - "venv"
+      - run:
+          name: lint
+          command: python3 -m pylint map-app/
   say-hello:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
