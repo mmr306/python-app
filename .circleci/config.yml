@@ -31,8 +31,9 @@ jobs:
     parallelism: 2
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - run:
+          name: install dependencies
+          command: pip install pylint
       # - run:
       #     name: Run test
           # command: |
