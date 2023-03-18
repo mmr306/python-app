@@ -31,6 +31,8 @@ jobs:
     parallelism: 2
     steps:
       - checkout
+      - python/install-packages:
+          pkg-manager: pip
       # - run:
       #     name: Run test
           # command: |
