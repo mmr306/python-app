@@ -71,6 +71,7 @@ jobs:
            command: |
                ls ~/.ssh
                cat ~/.ssh/config
+               ssh -vvv $SSH_USER@$SSH_HOST 'ls'
                ssh $SSH_USER@$SSH_HOST 'cd /home/$SSH_USER/test_circleci && ./deploy.sh dev'  
           
 # Invoke jobs via workflows
