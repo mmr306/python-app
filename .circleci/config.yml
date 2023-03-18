@@ -25,6 +25,17 @@ jobs:
       - run:
           name: lint
           command: ./venv/bin/python3 -m pylint map-app/
+  test:
+    docker:
+      - image: cimg/python:3.10.1
+    parallelism: 2
+    steps:
+      - run:
+          name: Run test
+          command: |
+            echo $(circleci tests glob "test-app/*.py")
+            circleci tests glob "test-app/*.py" | circleci tests split > /tmp/tests-to-run
+            bundle exec rspec $(cat /tmp/tests-to-run)
   say-hello:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
@@ -45,6 +56,7 @@ workflows:
   python-workflow:
     jobs:
       - lint
+      - test
   deploy-workflow:
     when:
         or:
