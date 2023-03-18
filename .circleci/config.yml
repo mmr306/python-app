@@ -60,12 +60,11 @@ jobs:
           command: "echo Hello, World!"
   deploy:
     machine: true
-    working_directory: ~/repo-name
     steps:
       - checkout
       - run:
            name: Test deploy 
-           command: ssh $SSH_USER@$SSH_HOST 'cd /home/$SSH_USER/test_circleci && echo "Hello" >> test.txt'  
+           command: ssh $SSH_USER@$SSH_HOST 'cd /home/$SSH_USER/test_circleci && ./deploy.sh dev'  
           
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
