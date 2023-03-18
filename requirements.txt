@@ -46,3 +46,10 @@ flask==2.1.1
 flask-compress==1.11
 plotly==5.6.0
 dash==2.3.1
+pytest==7.2.2
+attrs==22.2.0
+colorama==0.4.6
+exceptiongroup==1.1.1
+iniconfig==2.0.0
+packaging==21.3
+pluggy==1.0.0
