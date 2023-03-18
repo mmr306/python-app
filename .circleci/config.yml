@@ -59,7 +59,8 @@ jobs:
           name: "Say hello"
           command: "echo Hello, World!"
   deploy:
-    machine: true
+    docker:
+      - image: arvindr226/alpine-ssh
     steps:
       - checkout
       - add_ssh_keys:
@@ -74,8 +75,8 @@ jobs:
            command: |
                ls ~/.ssh
                cat ~/.ssh/config
-               ssh -vvv $SSH_USER@$SSH_HOST 'ls'
-               ssh $SSH_USER@$SSH_HOST 'cd /home/$SSH_USER/test_circleci && ./deploy.sh dev'  
+               ssh -oStrictHostKeyChecking=no -v  $SSH_USER@$SSH_HOST 'ls'
+               #ssh $SSH_USER@$SSH_HOST 'cd /home/$SSH_USER/test_circleci && ./deploy.sh dev'  
           
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
