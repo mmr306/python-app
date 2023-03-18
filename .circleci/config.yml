@@ -38,13 +38,18 @@ jobs:
           name: "Say hello"
           command: "echo Hello, World!"
      
-
           
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   python-workflow:
     jobs:
-      #- say-hello
       - lint
+  deploy-workflow:
+    when:
+        or:
+          - equal: [main, << pipeline.git.branch >>]
+    jobs:
+      - say-hello
 
+  
