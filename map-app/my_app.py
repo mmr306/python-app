@@ -22,11 +22,13 @@ class TrailProcessing:
         """ Function: """
         self.trail_data_frame = self.parse_csv(filename)
 
-    def parse_csv(self, filename):
+    @staticmethod
+    def parse_csv(filename):
         """ Function: """
         return pd.read_csv(filename)
 
-    def parse_multiple(self, path, outputfile):
+    @staticmethod
+    def parse_multiple(path, outputfile):
         """ Function: """
         files = glob.glob(os.path.join(path,'*.gpx'))
         data_frame = pd.DataFrame()
