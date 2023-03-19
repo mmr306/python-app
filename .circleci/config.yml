@@ -24,7 +24,7 @@ jobs:
             - "venv"
       - run:
           name: lint
-          command: ./venv/bin/python3 -m pylint --generated-member=TextFileReader.longitude,TextFileReader.latitude map-app/ 
+          command: ./venv/bin/python3 -m pylint map-app/ 
   test:
     docker:
       - image: cimg/python:3.10.1
