@@ -1,63 +1,87 @@
 """ Creater: Melissa Robertson"""
 import os
+import glob
+import base64
 import plotly.graph_objects as go
 import plotly.express as px
 import dash
 from dash import html
 from dash import dcc
+from dash.dependencies import Input, Output
 from gpx_converter import Converter
 import pandas as pd
 import numpy as np
-import glob
-from dash.dependencies import Input, Output, State
-import base64
-px.set_mapbox_access_token(open(os.path.join(os.getcwd(),'map-app',".mapbox_token")).read())
+
+with open(os.path.join(os.getcwd(),'map-app',".mapbox_token"), "r", encoding="utf8") as map_file:
+    mapbox_token = map_file.read()
+px.set_mapbox_access_token(mapbox_token)
 
 class TrailProcessing:
+    """ Class: TrailProcessing"""
     def __init__(self, filename):
-        self.trailDataFrame = self.parse_csv(filename)
+        """ Function: """
+        self.trail_data_frame = self.parse_csv(filename)
+
     def parse_csv(self, filename):
+        """ Function: """
         return pd.read_csv(filename)
-    
+
     def parse_multiple(self, path, outputfile):
+        """ Function: """
         files = glob.glob(os.path.join(path,'*.gpx'))
-        df = pd.DataFrame()
+        data_frame = pd.DataFrame()
         for file in files:
             print (file)
-            df = pd.concat(objs=[df, Converter(input_file=file).gpx_to_dataframe()])
-        df.to_csv(outputfile, index=False)    
+            data_frame = pd.concat(objs=[data_frame, Converter(input_file=file).gpx_to_dataframe()])
+        data_frame.to_csv(outputfile, index=False)
 
-    def parse_upload_contents(self, contents, filename, date):
+    def parse_upload_contents(self, contents):
+        """ Function: """
         try:
-            content_type, content_string = contents.split(',')
-            decoded = base64.b64decode(content_string)
-            with open("output.gpx","w+") as f:
-                    f.write(decoded.decode('utf-8'))#.decode("utf-8"))
-        except Exception as e:
-            print(str(e))
-        self.trailDataFrame = pd.concat(objs=[self.trailDataFrame, Converter(input_file="output.gpx").gpx_to_dataframe()])
+            content_string = contents.split(',')
+            decoded = base64.b64decode(content_string[1])
+            with open("output.gpx", "w+", encoding="utf-8") as output_write_file:
+                output_write_file.write(decoded.decode('utf-8'))
+        except ValueError as except_output:
+            print(str(except_output))
+        except OSError as except_output:
+            print(str(except_output))
+        self.trail_data_frame = pd.concat(objs=[self.trail_data_frame,
+                            Converter(input_file="output.gpx").gpx_to_dataframe()])
 
     def parse_file_contents(self,file):
-        self.trailDataFrame = pd.concat(objs=[self.trailDataFrame, Converter(input_file=file).gpx_to_dataframe()])
+        """ Function: """
+        self.trail_data_frame = pd.concat(objs=[self.trail_data_frame,
+                            Converter(input_file=file).gpx_to_dataframe()])
 
     def create_fig(self):
-        fig2 = px.scatter_mapbox(self.trailDataFrame, lat="latitude", lon="longitude", color_discrete_sequence=["fuchsia"], zoom=3, height=700)
+        """ Function: """
+        fig2 = px.scatter_mapbox(self.trail_data_frame, lat="latitude", lon="longitude",
+                                color_discrete_sequence=["fuchsia"], zoom=3, height=700)
         middle = self.get_middle()
         print (middle)
         fig2.update_layout(hovermode='closest',
-                        mapbox=dict(style="dark",
-                                    #accesstoken="pk.eyJ1IjoibW1yMzA2IiwiYSI6ImNsZmFhMGMzNDAzamszc21ld3phd2xid2MifQ.MfmOecF0mCUyi67_GBQVFQ",
-                                    bearing=0,
-                                    center=go.layout.mapbox.Center(lat=middle['latitude'],lon=middle['longitude']), #center=go.layout.mapbox.Center(lat=44,lon=-73), 
-                                    zoom=middle['zoom'],pitch=0))
+                        mapbox={"style" : "dark",
+                                    "bearing" : 0,
+                                    "center" : go.layout.mapbox.Center(lat=middle['latitude'],\
+                                                                    lon=middle['longitude']),
+                                    "zoom" : middle['zoom'],
+                                    "pitch" : 0})
         fig2.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
         return fig2
+
     def get_middle(self):
-        max_bound = max(abs(self.trailDataFrame.latitude.max()-self.trailDataFrame.latitude.min()), abs(self.trailDataFrame.longitude.max()-self.trailDataFrame.longitude.min())) * 111
+        """ Function: """
+        max_bound = max(abs(self.trail_data_frame.latitude.max()-\
+                            self.trail_data_frame.latitude.min()),\
+                        abs(self.trail_data_frame.longitude.max()-\
+                            self.trail_data_frame.longitude.min())) * 111
         zoom = 11.5 - np.log(max_bound)
         return {
-            'latitude': ((self.trailDataFrame.latitude.max() + self.trailDataFrame.latitude.min()) / 2.0),
-            'longitude': ((self.trailDataFrame.longitude.max() + self.trailDataFrame.longitude.min()) / 2.0),
+            'latitude': ((self.trail_data_frame.latitude.max() + \
+                            self.trail_data_frame.latitude.min()) / 2.0),
+            'longitude': ((self.trail_data_frame.longitude.max() + \
+                            self.trail_data_frame.longitude.min()) / 2.0),
             'zoom': zoom
             }
 
@@ -66,9 +90,10 @@ trail = TrailProcessing("trail_output2.csv")
 #trail.parse_multiple(r'/directory', "trail_output2.csv")
 app = dash.Dash()
 
-app.layout = html.Div([html.H1("Vermont Hiking"), 
-                       html.Hr(), 
-                       html.Div(children=[dcc.Graph(id='fig2', figure=trail.create_fig())], id='output-data-upload'),
+app.layout = html.Div([html.H1("Vermont Hiking"),
+                       html.Hr(),
+                       html.Div(children=[dcc.Graph(id='fig2', figure=trail.create_fig())],
+                                            id='output-data-upload'),
                        dcc.Upload(
                             id='upload-data',
                             children=html.Div([
@@ -93,15 +118,13 @@ app.layout = html.Div([html.H1("Vermont Hiking"),
 
 
 @app.callback(Output('output-data-upload', 'children'),
-              Input('upload-data', 'contents'),
-              State('upload-data', 'filename'),
-              State('upload-data', 'last_modified'))
-def parse_upload_contents(list_of_contents, list_of_names, list_of_dates):
+              Input('upload-data', 'contents'))
+def parse_upload_contents(list_of_contents):
+    """ Function: """
     if list_of_contents is not None:
-        trail.parse_upload_contents(list_of_contents, list_of_names, list_of_dates)
+        trail.parse_upload_contents(list_of_contents)
         return [dcc.Graph(figure=trail.create_fig())]
-    else:
-        return dash.no_update
+    return dash.no_update
 
 if __name__ == '__main__':
     app.run_server(debug=True)
