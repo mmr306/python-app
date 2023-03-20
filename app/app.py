@@ -5,6 +5,7 @@ import base64
 import plotly.graph_objects as go
 import plotly.express as px
 import dash
+import flask
 from dash import html
 from dash import dcc
 from dash.dependencies import Input, Output
@@ -12,7 +13,10 @@ from gpx_converter import Converter
 import pandas as pd
 import numpy as np
 
-with open(os.path.join(os.getcwd(),'map-app',".mapbox_token"), "r", encoding="utf8") as map_file:
+server = flask.Flask(__name__)
+app = dash.Dash(__name__, server=server)
+server = app.server
+with open(os.path.join(os.getcwd(),".mapbox_token"), "r", encoding="utf8") as map_file:
     mapbox_token = map_file.read()
 px.set_mapbox_access_token(mapbox_token)
 
@@ -88,9 +92,9 @@ class TrailProcessing:
             }
 
 
-trail = TrailProcessing("trail_output2.csv")
+trail = TrailProcessing("./initial-csv/trail_output.csv")
 #trail.parse_multiple(r'/directory', "trail_output2.csv")
-app = dash.Dash()
+
 
 app.layout = html.Div([html.H1("Vermont Hiking"),
                        html.Hr(),
@@ -129,4 +133,4 @@ def parse_upload_contents(list_of_contents):
     return dash.no_update
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, host='0.0.0.0', port='8080')
