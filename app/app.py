@@ -21,19 +21,49 @@ with open(os.path.join(os.getcwd(),".mapbox_token"), "r", encoding="utf8") as ma
 px.set_mapbox_access_token(mapbox_token)
 
 class TrailProcessing:
-    """ Class: TrailProcessing"""
-    def __init__(self, filename):
-        """ Function: """
-        self.trail_data_frame = self.parse_csv(filename)
+    """
+    A class used to represent an Trail processing data
 
-    @staticmethod
-    def parse_csv(filename):
-        """ Function: """
-        return pd.read_csv(filename)
+    ...
+
+    Attributes
+    ----------
+    trail_data_frame : DataFrame
+        a data frame that represents the latitude and longitude of imported gpx data
+
+    Methods
+    -------
+    parse_multiple(filename)
+        Reads in multiple gpx files and outputs into one csv file
+    parse_upload_contents(contents)
+        Takes gpx data uploaded from site and imports it into data frame
+    parse_file_contents(file)
+        Takes a gpx file and imports it into data frame
+    create_fig
+        Creates figure based on current datagrame
+    get_middle
+        Takes dataframe and gets middle points and zoom data for map figure
+
+    """
+    def __init__(self, filename):
+        """
+        Parameters
+        ----------
+        filename : str
+            The name of the initial csv file to load
+        """
+        self.trail_data_frame = pd.read_csv(filename)
 
     @staticmethod
     def parse_multiple(path, outputfile):
-        """ Function: """
+        """Combines gpx data into a csv if no files are found returns empty file.
+
+        Parameters
+        ----------
+        outputfile : str
+            File name used to output combined csv
+
+        """
         files = glob.glob(os.path.join(path,'*.gpx'))
         data_frame = pd.DataFrame()
         for file in files:
@@ -42,7 +72,14 @@ class TrailProcessing:
         data_frame.to_csv(outputfile, index=False)
 
     def parse_upload_contents(self, contents):
-        """ Function: """
+        """Takes uploaded gpx data and adds it to current dataframe
+
+        Parameters
+        ----------
+        contents : str
+            Gpx content used as input to create combined dataframe
+
+        """
         try:
             content_string = contents.split(',')
             decoded = base64.b64decode(content_string[1])
@@ -56,12 +93,19 @@ class TrailProcessing:
                             Converter(input_file="output.gpx").gpx_to_dataframe()])
 
     def parse_file_contents(self,file):
-        """ Function: """
+        """Takes gpx data and adds it to current dataframe
+
+        Parameters
+        ----------
+        file : str
+            File name (*.gpx) used as input to create combined dataframe
+
+        """
         self.trail_data_frame = pd.concat(objs=[self.trail_data_frame,
                             Converter(input_file=file).gpx_to_dataframe()])
 
     def create_fig(self):
-        """ Function: """
+        """Takes dataframe and creates map"""
         fig2 = px.scatter_mapbox(self.trail_data_frame, lat="latitude", lon="longitude",
                                 color_discrete_sequence=["fuchsia"], zoom=3, height=700)
         middle = self.get_middle()
@@ -77,7 +121,7 @@ class TrailProcessing:
         return fig2
 
     def get_middle(self):
-        """ Function: """
+        """Takes dataframe and gets middle points and zoom data for map figure"""
         max_bound = max(abs(self.trail_data_frame.latitude.max()-\
                             self.trail_data_frame.latitude.min()),\
                         abs(self.trail_data_frame.longitude.max()-\
@@ -96,7 +140,7 @@ trail = TrailProcessing("./initial-csv/trail_output.csv")
 #trail.parse_multiple(r'/directory', "trail_output2.csv")
 
 
-app.layout = html.Div([html.H1("Vermont Hiking"),
+app.layout = html.Div([html.H1("Hiking"),
                        html.Hr(),
                        html.Div(children=[dcc.Graph(id='fig2', figure=trail.create_fig())],
                                             id='output-data-upload'),
@@ -126,7 +170,7 @@ app.layout = html.Div([html.H1("Vermont Hiking"),
 @app.callback(Output('output-data-upload', 'children'),
               Input('upload-data', 'contents'))
 def parse_upload_contents(list_of_contents):
-    """ Function: """
+    """Function to process uploaded file from website """
     if list_of_contents is not None:
         trail.parse_upload_contents(list_of_contents)
         return [dcc.Graph(figure=trail.create_fig())]

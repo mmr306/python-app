@@ -23,6 +23,7 @@ pickleshare==0.7.5
 platformdirs==2.5.1
 prompt-toolkit==3.0.28
 psycopg2==2.9.3
+psycopg2-binary==2.9.5
 ptyprocess==0.7.0
 pure-eval==0.2.2
 Pygments==2.11.2
@@ -53,4 +54,4 @@ exceptiongroup==1.1.1
 iniconfig==2.0.0
 packaging==21.3
 pluggy==1.0.0
-gpx-converter
+gpx-converter==2.0.0

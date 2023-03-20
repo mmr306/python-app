@@ -18,3 +18,9 @@ How do I export data from the Health app on my iPhone?
 6. Choose how you want to share the exported data: AirDrop it, send it through messages or other apps, or save it to your device using Files. 
 7. To find *.gpx files open exported folder and navigate to \apple_health_export\workout-routes. All workouts that use gps data will be logged here.
 https://appletoolbox.com/how-to-export-apple-health-data-from-your-iphone-and-apple-watch/
+
+Setting up gunicorn on ubuntu sortof
+https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-18-04
+sudo apt install python3-pip python3 libpq-dev python3-dev gunicorn
+
+gunicorn --workers=5 --threads=1 -b 0.0.0.0:8080 map-app:server
