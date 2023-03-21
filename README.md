@@ -1,11 +1,12 @@
 # python-app
- App code using CircleCI
+An app using dash to display gpx data pulled from an Apple Watch
 
 ## To connect to server for test and deploy
 On Server create ssh key
 1. ssh-keygen -t ed25519 -C "email@email.com" #Creates id_ed25519 and id_ed25519.pub key pair
 2. Add id_ed25519 content to ssh key on circle ci
 3. Add id_ed25519.pub content to authorized_keys on server.
+
 https://www.digitalocean.com/community/tutorials/how-to-automate-deployment-using-circleci-and-github-on-ubuntu-18-04
 
 
@@ -38,3 +39,8 @@ gunicorn --workers=5 --threads=1 -b 0.0.0.0:8080 map-app:server
 ```
 
 https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-18-04
+
+## To get Mapbox token
+Register for a free account at https://mapbox.com/ and obtain a Mapbox Access token
+
+https://plotly.com/python/mapbox-layers/
