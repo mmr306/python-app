@@ -137,10 +137,10 @@ class TrailProcessing:
 
 
 trail = TrailProcessing("trail_output.csv")
-#trail.parse_multiple(r'C:\Users\mmr30\Documents\mysite\python-app\test-app', "outputtest.csv")
+#trail.parse_multiple(r'\python-app\test-app', "outputtest.csv")
 
 
-app.layout = html.Div([html.H1("Hiking"),
+app.layout = html.Div([html.H1("Vermont Hiking"),
                        html.Hr(),
                        html.Div(children=[dcc.Graph(id='fig2', figure=trail.create_fig())],
                                             id='output-data-upload'),
@@ -160,7 +160,6 @@ app.layout = html.Div([html.H1("Hiking"),
                                 'textAlign': 'center',
                                 'margin': '10px'
                             },
-                            # Allow multiple files to be uploaded
                             multiple=False
                        ),
                     ])
