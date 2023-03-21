@@ -91,7 +91,7 @@ workflows:
   python-workflow:
     jobs:
       - lint
-      # - test
+      - test
       - deploy-dev:
           requires:
             - lint
