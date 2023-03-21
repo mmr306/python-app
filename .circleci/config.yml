@@ -96,14 +96,13 @@ workflows:
       - lint-and-test
       - deploy-dev:
           requires:
-            - lint
-            - test
+            - lint-and-test
           filters:
             branches:
               only: develop
       - deploy-prod:
               requires:
-                - lint
+                - lint-and-test
               filters:
                 branches:
                   only: main
