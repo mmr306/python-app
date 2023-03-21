@@ -8,6 +8,7 @@ jobs:
   lint-and-test:
     docker:
       - image: cimg/python:3.10.1
+    parallelism: 3
     steps:
       - checkout
       - restore_cache: # **restores saved dependency cache if the Branch key template or requirements.txt files have not changed since the previous run**
@@ -42,7 +43,7 @@ jobs:
   # test:
   #   docker:
   #     - image: cimg/python:3.10.1
-  #   parallelism: 2
+  #   
   #   steps:
   #     - checkout
   #     - run:
