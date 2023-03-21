@@ -31,12 +31,14 @@ jobs:
           command: |
             set -e
             TEST_FILES=$(circleci tests glob "app/tests/*.py" | circleci tests split --split-by=filesize)
+            cd app
             mkdir -p test-results
+            echo "TEST_TOKEN" >> .mapbox_token
             ./venv/bin/python3 -m pytest --verbose --junitxml=test-results/junit.xml $TEST_FILES
       - store_test_results:
-          path: test-results
+          path: app/test-results
       - store_artifacts:
-          path: test-results
+          path: app/test-results
   # test:
   #   docker:
   #     - image: cimg/python:3.10.1
