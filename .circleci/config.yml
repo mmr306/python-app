@@ -38,7 +38,7 @@ jobs:
           name: Run tests
           command: |
             set -e
-            TEST_FILES=$(circleci tests glob "test-app/*.py" | circleci tests split --split-by=filesize)
+            TEST_FILES=$(circleci tests glob "app/tests/*.py" | circleci tests split --split-by=filesize)
             mkdir -p test-results
             pytest --verbose --junitxml=test-results/junit.xml $TEST_FILES
       - store_test_results:
@@ -58,10 +58,8 @@ jobs:
       - run:
           name: "Say hello"
           command: "echo Hello, World!"
-  deploy:
+  deploy-prod:
     machine: true
-    # docker:
-    #   - image: arvindr226/alpine-ssh
     steps:
       - checkout
       - add_ssh_keys:
@@ -72,7 +70,20 @@ jobs:
            command: |
                ls ~/.ssh
                cat ~/.ssh/config
-               ssh $SSH_USER@$SSH_HOST 'cd /home/sammy/test_circleci && ./deploy.sh dev'  
+               ssh $SSH_USER@$SSH_HOST 'cd /home/sammy/test_circleci && ./deploy.sh prod'  
+  deploy-dev:
+    machine: true
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "ec:d4:6f:89:b6:5d:2b:92:af:74:44:21:19:1a:9a:cd"
+      - run:
+           name: Test deploy 
+           command: |
+               ls ~/.ssh
+               cat ~/.ssh/config
+               ssh $SSH_USER@$SSH_HOST 'cd /home/sammy/dev_circleci && ./deploy.sh dev'  
           
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -81,12 +92,20 @@ workflows:
     jobs:
       - lint
       # - test
-      - deploy
-  deploy-workflow:
-    when:
-        or:
-          - equal: [main, << pipeline.git.branch >>]
-    jobs:
-      - say-hello
+      - deploy-dev:
+          requires:
+            - lint
+            - test
+          filters:
+            branches:
+              only: develop
+      - deploy-prod:
+              requires:
+                - lint
+              filters:
+                branches:
+                  only: main
+      
+      
 
   

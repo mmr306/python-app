@@ -136,8 +136,8 @@ class TrailProcessing:
             }
 
 
-trail = TrailProcessing("./initial-csv/trail_output.csv")
-#trail.parse_multiple(r'/directory', "trail_output2.csv")
+trail = TrailProcessing("trail_output.csv")
+#trail.parse_multiple(r'C:\Users\mmr30\Documents\mysite\python-app\test-app', "outputtest.csv")
 
 
 app.layout = html.Div([html.H1("Hiking"),

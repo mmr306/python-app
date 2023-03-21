@@ -22,5 +22,12 @@ https://appletoolbox.com/how-to-export-apple-health-data-from-your-iphone-and-ap
 Setting up gunicorn on ubuntu sortof
 https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-18-04
 sudo apt install python3-pip python3 libpq-dev python3-dev gunicorn
+sudo vi /etc/systemd/system/gunicorn.service
+sudo vi /etc/systemd/system/gunicorn.socket
+systemctl start gunicorn-prod.socket
+systemctl enable gunicorn-prod.socket
+sudo ln -s /etc/nginx/sites-available/dev.vermontvt.com /etc/nginx/sites-enabled/dev.vermontvt.com
 
+nginx -t
+sudo systemctl restart nginx
 gunicorn --workers=5 --threads=1 -b 0.0.0.0:8080 map-app:server
