@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Apple Health Export" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <metadata>
+    <time>2023-03-18T16:39:18Z</time>
+  </metadata>
+  <trk>
+    <name>Route 2023-02-04 7:45pm</name>
+    <trkseg>
+      <trkpt lon="-122.336797" lat="47.608826"><ele>40.501110</ele><time>2023-02-05T00:45:13Z</time><extensions><speed>0.000000</speed><course>234.175091</course><hAcc>14.770232</hAcc><vAcc>9.287685</vAcc></extensions></trkpt>
+      <trkpt lon="-122.336834" lat="47.608831"><ele>40.497085</ele><time>2023-02-05T00:45:14Z</time><extensions><speed>0.000000</speed><course>234.175058</course><hAcc>14.903958</hAcc><vAcc>9.071541</vAcc></extensions></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

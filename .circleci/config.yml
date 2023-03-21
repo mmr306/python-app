@@ -5,9 +5,10 @@ version: 2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  lint:
+  lint-and-test:
     docker:
       - image: cimg/python:3.10.1
+    parallelism: 3
     steps:
       - checkout
       - restore_cache: # **restores saved dependency cache if the Branch key template or requirements.txt files have not changed since the previous run**
@@ -18,13 +19,39 @@ jobs:
             python3 -m venv venv
             source venv/bin/activate
             pip install -r requirements.txt
+
       - save_cache: # ** special step to save dependency cache **
           key: *deps1-cache
           paths:
             - "venv"
       - run:
           name: lint
-          command: ./venv/bin/python3 -m pylint map-app/
+          command: ./venv/bin/python3 -m pylint app/ 
+      - run:
+          name: Run tests
+          command: |
+            set -e
+            cd app
+            TEST_FILES=$(circleci tests glob "tests/*.py" | circleci tests split --split-by=filesize)
+            mkdir -p test-results
+            echo "TEST_TOKEN" >> .mapbox_token
+            ../venv/bin/python3 -m pytest --verbose --junitxml=test-results/junit.xml $TEST_FILES
+      - store_test_results:
+          path: app/test-results
+      - store_artifacts:
+          path: app/test-results
+  # test:
+  #   docker:
+  #     - image: cimg/python:3.10.1
+  #   
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: install dependencies
+  #         command: pip install pytest
+      
+      
+          
   say-hello:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
@@ -37,19 +64,52 @@ jobs:
       - run:
           name: "Say hello"
           command: "echo Hello, World!"
-     
+  deploy-prod:
+    machine: true
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "ec:d4:6f:89:b6:5d:2b:92:af:74:44:21:19:1a:9a:cd"
+      - run:
+           name: Test deploy 
+           command: |
+               ls ~/.ssh
+               cat ~/.ssh/config
+               ssh $SSH_USER@$SSH_HOST 'cd /home/sammy/test_circleci && ./deploy.sh prod'  
+  deploy-dev:
+    machine: true
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "ec:d4:6f:89:b6:5d:2b:92:af:74:44:21:19:1a:9a:cd"
+      - run:
+           name: Test deploy 
+           command: |
+               ls ~/.ssh
+               cat ~/.ssh/config
+               ssh $SSH_USER@$SSH_HOST 'cd /home/sammy/dev_circleci && ./deploy.sh dev'  
           
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   python-workflow:
     jobs:
-      - lint
-  deploy-workflow:
-    when:
-        or:
-          - equal: [main, << pipeline.git.branch >>]
-    jobs:
-      - say-hello
+      - lint-and-test
+      - deploy-dev:
+          requires:
+            - lint-and-test
+          filters:
+            branches:
+              only: develop
+      - deploy-prod:
+              requires:
+                - lint-and-test
+              filters:
+                branches:
+                  only: main
+      
+      
 
   
