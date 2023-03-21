@@ -34,7 +34,7 @@ jobs:
             cd app
             mkdir -p test-results
             echo "TEST_TOKEN" >> .mapbox_token
-            ./venv/bin/python3 -m pytest --verbose --junitxml=test-results/junit.xml $TEST_FILES
+            ../venv/bin/python3 -m pytest --verbose --junitxml=test-results/junit.xml $TEST_FILES
       - store_test_results:
           path: app/test-results
       - store_artifacts:
